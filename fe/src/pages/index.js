@@ -19,14 +19,32 @@ export default function Home() {
     setData(response);
   };
 
-  //     const resData = await data.json();
-
-  //     console.log("success", resData);
-  //     return resData;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const deleteData = async (indexToDelete) => {
+    const response = fetch(`http://localhost:8080/user/${indexToDelete}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          Error("Network response was not ok");
+        }
+      })
+      .then((user) => {
+        const updatedData = data.filter(
+          (item, index) => index !== indexToDelete
+        );
+        setData(updatedData);
+        response.json();
+        // Handle the response data, maybe update the UI accordingly
+        console.log("Deleted user:", user);
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+      });
+  };
 
   const addData = () => {
     console.log(name, age);
@@ -35,6 +53,11 @@ export default function Home() {
   // useEffect(() => {
   //   fetchData();
   // }, []);
+
+  const handleDelete = (index) => {
+    deleteData(index);
+    console.log(handleDelete);
+  };
 
   return (
     <div className="w-full h-full container m-auto p-5 bg-white flex flex-col gap-5 items-cneter">
@@ -60,10 +83,22 @@ export default function Home() {
       </div>
 
       <ul className="flex flex-col itens-center justify-center gap-2">
-        {data?.map((element) => (
-          <div className="flex flex-row gap-4 ">
+        {data?.map((element, index) => (
+          <div key={index} className="flex flex-row gap-4 ">
             <li>{element.name}</li>
             <li>{element.age}</li>
+            <button
+              // onClick={editData}
+              className="bg-red-300 rounded-md px-5 py-1"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(index)}
+              className="bg-red-300 rounded-md px-5 py-1"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </ul>
