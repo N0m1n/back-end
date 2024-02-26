@@ -46,6 +46,38 @@ app.post("/user", (request, response) => {
   response.send(user);
 });
 
+app.delete("/user/:index", (request, response) => {
+  const indexToDelete = request.params.index;
+  let previousUser = fs.readFileSync("database.json");
+  user = JSON.parse(previousUser);
+  user.splice(indexToDelete, 1);
+  response.json(user);
+
+  fs.writeFile("database.json", JSON.stringify(user), (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("successful");
+    }
+  });
+});
+
+app.put("/user/:index", (request, response) => {
+  const indexToEdit = request.params.index;
+  const newData = request.body; // Assuming the request body contains the new data
+
+  // Check if the index is valid
+  if (indexToEdit < 0 || indexToEdit >= users.length) {
+    return response.status(400).json({ error: "Invalid index" });
+  }
+
+  // Update the user at the specified index with the new data
+  users[indexToEdit] = newData;
+
+  // Respond with the updated data
+  response.json(users);
+});
+
 app.listen(port, () => {
   console.log(` http://localhost:${port}`);
 });
