@@ -6,10 +6,9 @@ const port = 8080;
 const app = express();
 app.use(cors());
 app.use(express.json());
+const user = [];
 
-// const user = [{ name: "Nasaa", age: 23 }];
-
-app.get("/user", (request, response) => {
+app.get("/", (request, response) => {
   response.json(user);
 });
 
@@ -46,20 +45,21 @@ app.post("/user", (request, response) => {
   response.send(user);
 });
 
-app.delete("/user/:index", (request, response) => {
-  const indexToDelete = request.params.index;
-  let previousUser = fs.readFileSync("database.json");
-  user = JSON.parse(previousUser);
-  user.splice(indexToDelete, 1);
-  response.json(user);
+app.delete("/user/:id", (request, response) => {
+  const { id } = request.params;
 
-  fs.writeFile("database.json", JSON.stringify(user), (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("successful");
-    }
-  });
+  try {
+    const previousUser = fs.readFileSync("database.json");
+    user = JSON.parse(previousUser);
+
+    user = user.filter((el) => el.id !== id);
+
+    fs.writeFile("database.json", JSON.stringify(user));
+
+    response.json(user);
+  } catch (error) {
+    console.log("Error:", error);
+  }
 });
 
 app.put("/user/:index", (request, response) => {
