@@ -6,9 +6,9 @@ const port = 8080;
 const app = express();
 app.use(cors());
 app.use(express.json());
-const user = [];
 
-app.get("/", (request, response) => {
+app.get("/user", (request, response) => {
+  const user = JSON.parse(fs.readFileSync("database.json"));
   response.json(user);
 });
 
@@ -41,7 +41,6 @@ app.post("/user", (request, response) => {
       console.log("successful");
     }
   });
-
   response.send(user);
 });
 
